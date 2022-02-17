@@ -29,6 +29,7 @@ public class StringsResDoc {
   public void load() throws IOException, SAXException, ParserConfigurationException {
     loadFile();
     loadStringElement();
+    loadStringArrayElement();
   }
 
   private void loadFile() throws ParserConfigurationException, IOException, SAXException {
@@ -50,7 +51,23 @@ public class StringsResDoc {
       if (attrs == null || attrs.getNamedItem("name") == null) {
         continue;
       }
-      contents.add(new NValue(attrs.getNamedItem("name").getNodeName(), node.getNodeValue()));
+      contents.add(new NValue(attrs.getNamedItem("name").getNodeValue(), node.getNodeValue()));
+    }
+  }
+
+  private void loadStringArrayElement() {
+    NodeList nodeList = rootEl.getElementsByTagName("string-array");
+    for (int i = 0; i < nodeList.getLength(); i++) {
+      NamedNodeMap nodeMap = nodeList.item(i).getAttributes();
+      String name = nodeMap.getNamedItem("name").getNodeValue();
+      NodeList childNodes = nodeList.item(i).getChildNodes();
+      for (int j = 0; j < childNodes.getLength(); j++) {
+        Node item = childNodes.item(j);
+        if (!"item".equals(item.getNodeName())) {
+          continue;
+        }
+        contents.add(new NValue(name + j, item.getNodeValue()));
+      }
     }
   }
 

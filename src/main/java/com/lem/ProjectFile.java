@@ -28,26 +28,27 @@ public class ProjectFile {
     stringsFiles = new ArrayList<>();
     for (File file : projectDir.listFiles()) {
       fileName = file.getName();
-      if (fileName.startsWith(PREFIX_VALUE_DIR)) {
-        //解析后面的内容
-        String fileDes = fileName.substring(PREFIX_VALUE_DIR.length());
+      if ("values".equals(fileName) || fileName.startsWith(PREFIX_VALUE_DIR)) {
+        String language = null, country = null;
+        if (!"values".equals(fileName)) {
+          String fileDes = fileName.substring(PREFIX_VALUE_DIR.length());
 
-        String[] names = fileDes.split("-");
-        String language, country;
-        if (CollectionUtil.isEmpty(names)) {
-          continue;
-        } else if (names.length == 1) {
-          language = names[0];
-          country = null;
-        } else if (names.length == 2) {
-          language = names[0];
-          if (names[1].startsWith("r")) {
-            country = names[1].substring(1);
-          } else {
+          String[] names = fileDes.split("-");
+          if (CollectionUtil.isEmpty(names)) {
+            continue;
+          } else if (names.length == 1) {
+            language = names[0];
             country = null;
+          } else if (names.length == 2) {
+            language = names[0];
+            if (names[1].startsWith("r")) {
+              country = names[1].substring(1);
+            } else {
+              country = null;
+            }
+          } else {
+            continue;
           }
-        } else {
-          continue;
         }
 
         if (file.isDirectory()) {
