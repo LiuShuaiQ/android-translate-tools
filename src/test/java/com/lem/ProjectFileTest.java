@@ -9,7 +9,7 @@ public class ProjectFileTest {
 
   @Test
   public void loadFile() {
-    File file = new File("./src/test/resources/dir");
+    File file = new File("./");
 
     ProjectFile projectFile = new ProjectFile();
     projectFile.loadFile(file);

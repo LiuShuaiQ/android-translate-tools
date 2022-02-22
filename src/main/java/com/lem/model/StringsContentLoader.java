@@ -31,8 +31,11 @@ public class StringsContentLoader {
 
   public void load() throws IOException, SAXException, ParserConfigurationException {
     loadFile();
-    loadStringElement();
-    loadStringArrayElement();
+    stringsContents.clear();
+    loadElement("string");
+    stringsArrayContents.clear();
+    loadArrayElement("string-array");
+    loadArrayElement("array");
 
     List<StringItem> allItem = new ArrayList<>();
     allItem.addAll(stringsContents);
@@ -41,6 +44,9 @@ public class StringsContentLoader {
     raw.setItemMap(allItem);
   }
 
+  /**
+   * 加载文件
+   */
   private void loadFile() throws ParserConfigurationException, IOException, SAXException {
     if (this.raw == null || this.raw.getFile() == null || !this.raw.getFile().isFile()) {
       throw new IllegalArgumentException("resource document file is illegal");
@@ -51,9 +57,11 @@ public class StringsContentLoader {
     rootEl = doc.getDocumentElement();
   }
 
-  private void loadStringElement() {
-    NodeList nodeList = rootEl.getElementsByTagName("string");
-    stringsContents.clear();
+  /**
+   * 加载单个节点
+   */
+  private void loadElement(String element) {
+    NodeList nodeList = rootEl.getElementsByTagName(element);
 
     for (int i = 0; i < nodeList.getLength(); i++) {
       Node node = nodeList.item(i);
@@ -72,9 +80,11 @@ public class StringsContentLoader {
     }
   }
 
-  private void loadStringArrayElement() {
-    NodeList nodeList = rootEl.getElementsByTagName("string-array");
-    stringsArrayContents.clear();
+  /**
+   * 加载数组类型
+   */
+  private void loadArrayElement(String element) {
+    NodeList nodeList = rootEl.getElementsByTagName(element);
     for (int i = 0; i < nodeList.getLength(); i++) {
       NamedNodeMap nodeMap = nodeList.item(i).getAttributes();
       if (nodeMap == null || nodeMap.getNamedItem("name") == null) {
@@ -92,7 +102,12 @@ public class StringsContentLoader {
         if (!"item".equals(item.getNodeName())) {
           continue;
         }
-        stringsArrayContents.add(new StringItem(name + j, item.getNodeValue(), translatable));
+        NodeList childNodeList = item.getChildNodes();
+        if (childNodeList == null) {
+          stringsArrayContents.add(new StringItem(name + j, " ", translatable));
+        } else {
+          stringsArrayContents.add(new StringItem(name + j, childNodeList.item(0).getNodeValue(), translatable));
+        }
       }
     }
   }
