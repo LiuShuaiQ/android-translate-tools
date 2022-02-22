@@ -1,6 +1,7 @@
 package com.lem.model;
 
-import com.lem.bean.NValue;
+import com.lem.bean.StringItem;
+import com.lem.bean.StringsFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,14 +16,16 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public class StringsResDoc {
-  private File raw;
+public class StringsContentLoader {
+  private StringsFile raw;
 
-  private List<NValue> contents;
   private Document doc;
   private Element rootEl;
 
-  public StringsResDoc(File raw) {
+  private List<StringItem> stringsContents = new ArrayList<>();
+  private List<StringItem> stringsArrayContents = new ArrayList<>();
+
+  public StringsContentLoader(StringsFile raw) {
     this.raw = raw;
   }
 
@@ -30,52 +33,75 @@ public class StringsResDoc {
     loadFile();
     loadStringElement();
     loadStringArrayElement();
+
+    List<StringItem> allItem = new ArrayList<>();
+    allItem.addAll(stringsContents);
+    allItem.addAll(stringsArrayContents);
+    raw.setItemList(allItem);
+    raw.setItemMap(allItem);
   }
 
   private void loadFile() throws ParserConfigurationException, IOException, SAXException {
-    if (this.raw == null || !this.raw.isFile()) {
+    if (this.raw == null || this.raw.getFile() == null || !this.raw.getFile().isFile()) {
       throw new IllegalArgumentException("resource document file is illegal");
     }
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     DocumentBuilder db = dbf.newDocumentBuilder();
-    doc = db.parse(this.raw);
+    doc = db.parse(this.raw.getFile());
     rootEl = doc.getDocumentElement();
   }
 
   private void loadStringElement() {
     NodeList nodeList = rootEl.getElementsByTagName("string");
-    contents = new ArrayList<>();
+    stringsContents.clear();
+
     for (int i = 0; i < nodeList.getLength(); i++) {
       Node node = nodeList.item(i);
       NamedNodeMap attrs = node.getAttributes();
       if (attrs == null || attrs.getNamedItem("name") == null) {
         continue;
       }
-      contents.add(new NValue(attrs.getNamedItem("name").getNodeValue(), node.getNodeValue()));
+      boolean translatable = true;
+      Node transNode = attrs.getNamedItem("translatable");
+      if (transNode != null && "false".equals(transNode.getNodeValue())) {
+        translatable = false;
+      }
+      stringsContents.add(
+          new StringItem(attrs.getNamedItem("name").getNodeValue(), node.getChildNodes().item(0).getNodeValue(),
+              translatable));
     }
   }
 
   private void loadStringArrayElement() {
     NodeList nodeList = rootEl.getElementsByTagName("string-array");
+    stringsArrayContents.clear();
     for (int i = 0; i < nodeList.getLength(); i++) {
       NamedNodeMap nodeMap = nodeList.item(i).getAttributes();
+      if (nodeMap == null || nodeMap.getNamedItem("name") == null) {
+        continue;
+      }
       String name = nodeMap.getNamedItem("name").getNodeValue();
+      boolean translatable = true;
+      Node transNode = nodeMap.getNamedItem("translatable");
+      if (transNode != null && "false".equals(transNode.getNodeValue())) {
+        translatable = false;
+      }
       NodeList childNodes = nodeList.item(i).getChildNodes();
       for (int j = 0; j < childNodes.getLength(); j++) {
         Node item = childNodes.item(j);
         if (!"item".equals(item.getNodeName())) {
           continue;
         }
-        contents.add(new NValue(name + j, item.getNodeValue()));
+        stringsArrayContents.add(new StringItem(name + j, item.getNodeValue(), translatable));
       }
     }
   }
 
-  public List<NValue> getContents() {
-    return contents;
+  public List<StringItem> getStringsContents() {
+    return stringsContents;
   }
 
-  public void setContents(List<NValue> contents) {
-    this.contents = contents;
+  public List<StringItem> getStringsArrayContents() {
+    return stringsArrayContents;
   }
 }

@@ -13,7 +13,10 @@ public class ProjectFile {
 
   private List<StringsFile> stringsFiles;
 
-  public ProjectFile(File projectDir) {
+  public ProjectFile() {
+  }
+
+  public void loadFile(File projectDir) {
     this.projectDir = projectDir;
     if (this.projectDir == null) {
       throw new IllegalArgumentException("project dir is null");
@@ -21,9 +24,7 @@ public class ProjectFile {
     if (!this.projectDir.isDirectory()) {
       throw new IllegalArgumentException("project dir is illegal");
     }
-  }
 
-  public void loadFile() {
     String fileName;
     stringsFiles = new ArrayList<>();
     for (File file : projectDir.listFiles()) {
@@ -49,6 +50,8 @@ public class ProjectFile {
           } else {
             continue;
           }
+        } else {
+
         }
 
         if (file.isDirectory()) {
@@ -67,15 +70,7 @@ public class ProjectFile {
     return projectDir;
   }
 
-  public void setProjectDir(File projectDir) {
-    this.projectDir = projectDir;
-  }
-
   public List<StringsFile> getStringsFiles() {
     return stringsFiles;
-  }
-
-  public void setStringsFiles(List<StringsFile> stringsFiles) {
-    this.stringsFiles = stringsFiles;
   }
 }
