@@ -1,22 +1,20 @@
-# Android Translate Tool
+# Android项目翻译资源整理工具
 
-Organize strings.xml under Android resources into an excel table tool.
+将Android项目的资源文件夹中`strings.xml`文件整理到excel中
 
-[中文文档](./README-zh.md)
+## 如何构建
 
-## How to build
-
-build the package:
+构建安装包:
 ```shell script
 ./gradlew build
 ```
 
-run the project:
+运行项目:
 ```shell script
 ./gradlew run
 ```
 
-the output is:
+输出为:
 ```shell script
 usage: TranslateTool
  -d,--dir <arg>      Set translate resource dir
