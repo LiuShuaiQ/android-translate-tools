@@ -1,0 +1,10 @@
+<resources>
+  <string name="app_name">app name</string>
+  <string name="test">test</string>
+
+  <array name="arrays">
+    <item>充值</item>
+    <item>提现</item>
+    <item>转账</item>
+  </array>
+</resources>
