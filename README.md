@@ -24,3 +24,20 @@ usage: TranslateTool
  -o,--output <arg>   Set output file path
  -v,--version        Print version information.
 ```
+
+
+## How to use
+
+You can download dist in this directory:
+[dist](https://github.com/LiuShuaiQ/android-translate-tools/tree/main/dist)
+
+1. Download and unzip to the directory
+2. Run the startup script in the bin folder
+
+example:
+```shell script
+./TranslateTools -d <XXX/AndroidProject/app/src/main/res>
+```
+
+-d,--dir  
+set translate resource dir, e.g. /AndroidProject/app/src/main/res
