@@ -3,12 +3,19 @@ plugins {
   id 'application'
 }
 
-mainClassName = 'com.lem.Main'
+application {
+  mainClass = 'com.lem.Main'
+}
 group 'org.example'
 version '1.0-SNAPSHOT'
 
 repositories {
   mavenCentral()
+}
+
+task buildDist(dependsOn: assembleDist, type: Copy) {
+  from('build/distributions')
+  into('dist/')
 }
 
 dependencies {
