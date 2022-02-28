@@ -17,6 +17,9 @@ public class TranslateResTask implements Runnable {
 
   private ProjectFile projectFile;
 
+  /**
+   * res/values/strings.xml value item name list
+   */
   private List<String> valueNames = new ArrayList<>();
 
   public TranslateResTask(ArgsConfig config, ProjectFile projectFile) {
@@ -37,7 +40,7 @@ public class TranslateResTask implements Runnable {
     if (file == null) {
       file = new File("translate.xlsx");
     }
-    ExcelDataExport.exportDataToFile(transData(), file, "datas");
+    ExcelWriter.exportDataToFile(transData(), file, "datas");
     System.out.println("start write data to excel finish!");
   }
 
@@ -69,12 +72,15 @@ public class TranslateResTask implements Runnable {
     for (int i = 0; i < valueNames.size() + 1; i++) {
       List<String> row = new ArrayList<>();
       if (i == 0) {
+        // first row set file country and language name
         row.add("");
       } else {
+        // other row set strings value name
         row.add(valueNames.get(i - 1));
       }
       for (StringsFile stringsFile : projectFile.getStringsFiles()) {
         if (i == 0) {
+          // first row set file country and language name
           StringBuilder lanAndCountry = new StringBuilder();
           if (!TextUtil.isEmpty(stringsFile.getLanguage())) {
             lanAndCountry.append(stringsFile.getLanguage());
@@ -89,6 +95,7 @@ public class TranslateResTask implements Runnable {
           }
           continue;
         }
+        // other row set strings value name
         StringItem item = stringsFile.getItemMap().get(valueNames.get(i - 1));
         if (item == null) {
           row.add(" ");

@@ -14,6 +14,7 @@ public class CommandLineContext implements ArgsConfig {
   private Options cmdLineOps;
   private CommandLine cmd;
 
+  public boolean isDecode = false;
   public File dir;
   public File output;
 
@@ -47,10 +48,18 @@ public class CommandLineContext implements ArgsConfig {
       System.out.println("v0.1");
       return false;
     }
+
     return loadCommand();
   }
 
   public boolean loadCommand() {
+    // id decode
+    for (String arg : cmd.getArgs()) {
+      if ("d".equals(arg) || "decode".equals(arg)) {
+        isDecode = true;
+      }
+    }
+
     // project file path
     String dirPath = cmd.getOptionValue("d");
     if (TextUtil.isEmpty(dirPath)) {
@@ -58,7 +67,7 @@ public class CommandLineContext implements ArgsConfig {
       return false;
     }
     dir = new File(dirPath);
-    if (!dir.isDirectory()) {
+    if (!isDecode &&  !dir.isDirectory()) {
       System.out.println("dir path " + dir + " is not directory");
     }
     // output file
@@ -73,11 +82,16 @@ public class CommandLineContext implements ArgsConfig {
 
   public Options loadOptions() {
     Options options = new Options();
+    options.addOption("", true, "d/decode");
     options.addOption("h", "help", false, "Print this usage information.");
     options.addOption("v", "version", false, "Print version information.");
     options.addOption("d", "dir", true, "Set translate resource dir");
     options.addOption("o", "output", true, "Set output file path");
     return options;
+  }
+
+  @Override public boolean isDecode() {
+    return isDecode;
   }
 
   @Override public File getProjectDir() {

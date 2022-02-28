@@ -17,6 +17,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class StringsContentLoader {
+  public static final String PREFIX_ARRAY_ITEM = "$array_";
+  public static final String PREFIX_STRING_ARRAY_ITEM = "$strarray_";
   private StringsFile raw;
 
   private Document doc;
@@ -34,8 +36,8 @@ public class StringsContentLoader {
     stringsContents.clear();
     loadElement("string");
     stringsArrayContents.clear();
-    loadArrayElement("string-array");
-    loadArrayElement("array");
+    loadArrayElement("string-array", PREFIX_STRING_ARRAY_ITEM);
+    loadArrayElement("array", PREFIX_ARRAY_ITEM);
 
     List<StringItem> allItem = new ArrayList<>();
     allItem.addAll(stringsContents);
@@ -83,7 +85,7 @@ public class StringsContentLoader {
   /**
    * 加载数组类型
    */
-  private void loadArrayElement(String element) {
+  private void loadArrayElement(String element, String arrayPrefixTag) {
     NodeList nodeList = rootEl.getElementsByTagName(element);
     for (int i = 0; i < nodeList.getLength(); i++) {
       NamedNodeMap nodeMap = nodeList.item(i).getAttributes();
@@ -104,9 +106,10 @@ public class StringsContentLoader {
         }
         NodeList childNodeList = item.getChildNodes();
         if (childNodeList == null) {
-          stringsArrayContents.add(new StringItem(name + j, " ", translatable));
+          stringsArrayContents.add(new StringItem(arrayPrefixTag + name + "_" + j, " ", translatable));
         } else {
-          stringsArrayContents.add(new StringItem(name + j, childNodeList.item(0).getNodeValue(), translatable));
+          stringsArrayContents.add(
+              new StringItem(arrayPrefixTag + name + "_" + j, childNodeList.item(0).getNodeValue(), translatable));
         }
       }
     }

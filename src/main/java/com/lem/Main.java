@@ -1,5 +1,6 @@
 package com.lem;
 
+import com.lem.model.DecodeExcelTask;
 import com.lem.model.TranslateResTask;
 import com.lem.util.TextUtil;
 import java.io.File;
@@ -23,12 +24,14 @@ public class Main {
   }
 
   private void launchTask(CommandLineContext ctx) {
-    ProjectFile projectFile = new ProjectFile();
-    projectFile.loadFile(ctx.dir);
-
-    // 处理project文件
     List<Runnable> tasks = new ArrayList<>();
-    tasks.add(new TranslateResTask(ctx, projectFile));
+    if (ctx.isDecode) {
+      tasks.add(new DecodeExcelTask(ctx));
+    } else {
+      ProjectFile projectFile = new ProjectFile();
+      projectFile.loadFile(ctx.dir);
+      tasks.add(new TranslateResTask(ctx, projectFile));
+    }
     for (Runnable task : tasks) {
       System.out.println(":" + task.getClass().getSimpleName());
       task.run();
